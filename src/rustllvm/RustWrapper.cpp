@@ -560,8 +560,23 @@ extern "C" LLVMMetadataRef LLVMRustDIBuilderCreateCompileUnit(
     unsigned RuntimeVer, const char *SplitName) {
   auto *File = unwrapDI<DIFile>(FileRef);
 
+#if LLVM_VERSION_GE(8, 0)
+  DICompileUnit::DebugNameTableKind kind;
+#ifdef __linux__
+  kind = DICompileUnit::DebugNameTableKind::None;
+#else
+  kind = DICompileUnit::DebugNameTableKind::Default;
+#endif
+#endif
+
   return wrap(Builder->createCompileUnit(Lang, File, Producer, isOptimized,
-                                         Flags, RuntimeVer, SplitName));
+                                         Flags, RuntimeVer, SplitName,
+                                         DICompileUnit::DebugEmissionKind::FullDebug,
+                                         0, true, false
+#if LLVM_VERSION_GE(8, 0)
+                                         , kind
+#endif
+                                         ));
 }
 
 extern "C" LLVMMetadataRef
