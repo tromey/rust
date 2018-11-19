@@ -555,18 +555,16 @@ extern "C" void LLVMRustDIBuilderFinalize(LLVMRustDIBuilderRef Builder) {
 }
 
 extern "C" LLVMMetadataRef LLVMRustDIBuilderCreateCompileUnit(
-    LLVMRustDIBuilderRef Builder, unsigned Lang, LLVMMetadataRef FileRef,
+    LLVMModuleRef M, LLVMRustDIBuilderRef Builder, unsigned Lang, LLVMMetadataRef FileRef,
     const char *Producer, bool isOptimized, const char *Flags,
     unsigned RuntimeVer, const char *SplitName) {
   auto *File = unwrapDI<DIFile>(FileRef);
 
 #if LLVM_VERSION_GE(8, 0)
-  DICompileUnit::DebugNameTableKind kind;
-#ifdef __linux__
-  kind = DICompileUnit::DebugNameTableKind::None;
-#else
-  kind = DICompileUnit::DebugNameTableKind::Default;
-#endif
+  Triple TargetTriple(unwrap(M)->getTargetTriple());
+  DICompileUnit::DebugNameTableKind kind = TargetTriple.isOSLinux() ?
+    DICompileUnit::DebugNameTableKind::None :
+    DICompileUnit::DebugNameTableKind::Default;
 #endif
 
   return wrap(Builder->createCompileUnit(Lang, File, Producer, isOptimized,

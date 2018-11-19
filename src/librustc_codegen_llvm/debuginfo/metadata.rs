@@ -857,6 +857,7 @@ pub fn compile_unit_metadata(tcx: TyCtxt,
             debug_context.builder, name_in_debuginfo.as_ptr(), work_dir.as_ptr());
 
         let unit_metadata = llvm::LLVMRustDIBuilderCreateCompileUnit(
+            debug_context.llmod,
             debug_context.builder,
             DW_LANG_RUST,
             file_metadata,

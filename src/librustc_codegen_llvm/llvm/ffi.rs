@@ -1245,7 +1245,8 @@ extern "C" {
 
     pub fn LLVMRustDIBuilderFinalize(Builder: &DIBuilder);
 
-    pub fn LLVMRustDIBuilderCreateCompileUnit(Builder: &DIBuilder<'a>,
+    pub fn LLVMRustDIBuilderCreateCompileUnit(M: &'a Module,
+                                              Builder: &DIBuilder<'a>,
                                               Lang: c_uint,
                                               File: &'a DIFile,
                                               Producer: *const c_char,
